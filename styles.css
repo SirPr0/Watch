@@ -1,0 +1,207 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.window {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    width: 300px;
+    height: 200px;
+    background-color: rgba(40, 40, 40, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    overflow: hidden;
+    resize: both;
+    opacity: 1; /* Default opacity */
+    transition: opacity 0.3s ease;
+}
+
+.title-bar {
+    width: 100%;
+    height: 30px;
+    background-color: rgba(30, 30, 30, 0.9);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    user-select: none;
+}
+
+.text-area {
+    width: calc(100% - 20px);
+    height: calc(100% - 40px);
+    margin: 10px;
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+}
+
+.text-area::placeholder {
+    color: #888;
+}
+
+.video-player-container {
+    width: calc(100% - 20px);
+    height: calc(100% - 40px);
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.video-input-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.video-input-container input {
+    flex: 1;
+    padding: 5px;
+    background-color: rgba(50, 50, 50, 0.9);
+    border: none;
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+.video-input-container button {
+    padding: 5px 10px;
+    background-color: rgba(40, 40, 40, 0.9);
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.video-input-container button:hover {
+    opacity: 1;
+}
+
+#videoPlayer {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#videoPlayer iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 5px;
+}
+
+.settings-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(30, 30, 30, 0.9);
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-button:hover {
+    opacity: 1;
+}
+
+.settings-panel {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    width: 200px;
+    background-color: rgba(30, 30, 30, 0.9);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    display: none; /* Hidden by default */
+}
+
+.settings-panel .slider-container {
+    margin-bottom: 10px;
+}
+
+.settings-panel .slider {
+    width: 100%;
+}
+
+.settings-panel .toggle-button {
+    width: 100%;
+    padding: 5px;
+    background-color: rgba(40, 40, 40, 0.9);
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.settings-panel .toggle-button:hover {
+    opacity: 1;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.timer-controls button {
+    padding: 5px 10px;
+    background-color: rgba(40, 40, 40, 0.9);
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.timer-controls button:hover {
+    opacity: 1;
+}
+
+#timerDisplay {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Footer text */
+.footer-text {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-size: 12px;
+    color: #888;
+    user-select: none;
+}
