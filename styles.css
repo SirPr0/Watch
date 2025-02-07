@@ -1,14 +1,16 @@
+/* styles.css */
 :root {
-    --dark-bg: #1a1a1a;
-    --dark-border: #333333;
+    --dark-bg: rgba(30, 30, 30, 0.9);
+    --dark-border: rgba(255, 255, 255, 0.1);
     --accent: #2196f3;
+    --danger: #f44336;
     --text: #ffffff;
 }
 
 body {
     margin: 0;
     padding: 0;
-    background: #121212;
+    background: transparent;
     color: var(--text);
     font-family: 'Segoe UI', sans-serif;
     overflow: hidden;
@@ -24,13 +26,12 @@ body {
     overflow: hidden;
     min-width: 300px;
     min-height: 200px;
-    opacity: 0.95;
-    transition: opacity 0.3s ease;
+    backdrop-filter: blur(8px);
 }
 
 .title-bar {
-    padding: 10px;
-    background: #2a2a2a;
+    padding: 10px 15px;
+    background: rgba(40, 40, 40, 0.9);
     border-bottom: 1px solid var(--dark-border);
     cursor: move;
     user-select: none;
@@ -39,11 +40,22 @@ body {
 
 /* Video Window */
 .video-window {
-    top: 50px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     width: 640px;
     height: 360px;
+}
+
+.video-window.watching-mode {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.video-window.watching-mode .title-bar,
+.video-window.watching-mode .video-controls {
+    display: none;
 }
 
 .video-container {
@@ -51,23 +63,17 @@ body {
     height: calc(100% - 40px);
 }
 
-.video-controls {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
 #videoPlayer {
     width: 100%;
-    height: calc(100% - 40px);
+    height: 100%;
     border: none;
     border-radius: 4px;
 }
 
 /* Notes Window */
 .notes-window {
-    bottom: 50px;
-    left: 50px;
+    bottom: 20px;
+    left: 20px;
     width: 320px;
     height: 250px;
 }
@@ -75,7 +81,7 @@ body {
 .text-area {
     width: 100%;
     height: calc(100% - 40px);
-    padding: 10px;
+    padding: 15px;
     background: transparent;
     border: none;
     color: var(--text);
@@ -85,8 +91,9 @@ body {
 
 /* Timer Window */
 .timer-window {
-    top: 50px;
-    right: 50px;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 220px;
     height: 150px;
 }
@@ -98,8 +105,8 @@ body {
 
 #timerDisplay {
     font-size: 2.5em;
-    font-weight: 300;
     margin-bottom: 15px;
+    font-weight: 300;
 }
 
 .timer-controls {
@@ -110,8 +117,8 @@ body {
 
 .timer-btn {
     padding: 6px 12px;
-    background: #333;
-    border: none;
+    background: rgba(50, 50, 50, 0.9);
+    border: 1px solid var(--dark-border);
     border-radius: 4px;
     color: var(--text);
     cursor: pointer;
@@ -119,7 +126,7 @@ body {
 }
 
 .timer-btn:hover {
-    background: #444;
+    background: rgba(70, 70, 70, 0.9);
 }
 
 /* Settings Panel */
@@ -129,12 +136,16 @@ body {
     right: 20px;
     background: var(--dark-bg);
     border: 1px solid var(--dark-border);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    border-radius: 8px;
+    padding: 10px;
     cursor: pointer;
-    font-size: 20px;
-    color: var(--text);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.settings-button:hover {
+    background: rgba(50, 50, 50, 0.9);
+    transform: rotate(90deg);
 }
 
 .settings-panel {
@@ -147,6 +158,61 @@ body {
     padding: 15px;
     width: 220px;
     display: none;
+    backdrop-filter: blur(8px);
+}
+
+.slider-container {
+    margin-bottom: 20px;
+}
+
+.slider-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+}
+
+.settings-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toggle-button {
+    padding: 10px;
+    background: rgba(50, 50, 50, 0.9);
+    border: 1px solid var(--dark-border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.toggle-button:hover {
+    background: rgba(70, 70, 70, 0.9);
+    transform: translateX(4px);
+}
+
+.toggle-button.danger {
+    color: var(--danger);
+    border-color: var(--danger);
 }
 
 /* Secret Video Overlay */
@@ -155,8 +221,17 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 560px;
-    height: 315px;
+    width: 640px;
+    height: 360px;
     border: none;
     z-index: 9999;
+    background: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.secret-overlay iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
 }
