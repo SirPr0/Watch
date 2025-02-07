@@ -8,33 +8,39 @@
 </head>
 <body>
     <!-- Settings Button -->
-    <button class="settings-button" id="settingsButton">⚙️</button>
+    <button class="settings-button" id="settingsButton">
+        <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+        </svg>
+    </button>
 
     <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
         <div class="slider-container">
-            <label for="slider">Transparency:</label>
+            <label>Transparency</label>
             <input type="range" min="0" max="1" value="1" step="0.01" class="slider" id="slider">
         </div>
-        <button class="toggle-button" id="toggleNotesButton">Show Notes</button>
-        <button class="toggle-button" id="toggleTimerButton">Show Timer</button>
-        <button class="toggle-button" id="toggleVideoPlayerButton">Hide Video Player</button>
-        <button class="toggle-button" id="watchingModeButton">Watching Mode</button>
-        <button class="toggle-button" id="superSecretButton" style="display: none;">Super Secret Button</button>
+        <div class="settings-buttons">
+            <button class="toggle-button" id="toggleNotesButton">Toggle Notes</button>
+            <button class="toggle-button" id="toggleTimerButton">Toggle Timer</button>
+            <button class="toggle-button" id="toggleVideoPlayerButton">Toggle Video Player</button>
+            <button class="toggle-button" id="watchingModeButton">Watching Mode</button>
+            <button class="toggle-button danger" id="superSecretButton" style="display: none;">Super Secret</button>
+        </div>
     </div>
 
     <!-- Notes Window -->
     <div class="window" id="notesWindow" style="display: none;">
-        <div class="title-bar" id="notesTitleBar">Notes</div>
-        <textarea class="text-area" id="notesTextArea" placeholder="Type something..."></textarea>
+        <div class="title-bar">Notes</div>
+        <textarea class="text-area" placeholder="Type something..."></textarea>
     </div>
 
     <!-- Video Player Window -->
     <div class="window" id="videoPlayerWindow">
-        <div class="title-bar" id="videoPlayerTitleBar">Video Player</div>
+        <div class="title-bar">Video Player</div>
         <div class="video-player-container">
             <div class="video-input-container">
-                <input type="text" id="videoUrl" placeholder="Paste YouTube, Twitch, or Kick URL here">
+                <input type="text" id="videoUrl" placeholder="Paste video URL here">
                 <button id="runVideoButton">▶️</button>
             </div>
             <div id="videoPlayer"></div>
@@ -43,26 +49,23 @@
 
     <!-- Timer Window -->
     <div class="window" id="timerWindow" style="display: none;">
-        <div class="title-bar" id="timerTitleBar">Stop Timer</div>
-        <div style="padding: 10px;">
-            <div class="timer-controls">
-                <button id="add1Minute">+1</button>
-                <button id="add5Minutes">+5</button>
-                <button id="add10Minutes">+10</button>
-            </div>
+        <div class="title-bar">Timer</div>
+        <div class="timer-container">
             <div id="timerDisplay">00:00</div>
             <div class="timer-controls">
-                <button id="startTimerButton">Start</button>
-                <button id="pauseTimerButton" disabled>Pause</button>
-                <button id="stopTimerButton" disabled>Stop</button>
-                <button id="resetTimerButton">Reset</button>
+                <button class="timer-button" id="add1Minute">+1</button>
+                <button class="timer-button" id="add5Minutes">+5</button>
+                <button class="timer-button" id="add10Minutes">+10</button>
+            </div>
+            <div class="timer-controls">
+                <button class="timer-button" id="startTimerButton">Start</button>
+                <button class="timer-button" id="pauseTimerButton" disabled>Pause</button>
+                <button class="timer-button" id="resetTimerButton">Reset</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer-text">Made by SirPro</div>
-
+    <div class="footer-text">Tiny Video Player v2.0</div>
     <script src="script.js"></script>
 </body>
 </html>
