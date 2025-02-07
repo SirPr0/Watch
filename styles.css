@@ -205,3 +205,23 @@ body {
     color: #888;
     user-select: none;
 }
+
+/* Watching Mode Styles */
+.watching-mode #videoPlayerTitleBar,
+.watching-mode .video-input-container {
+    display: none;
+}
+
+.watching-mode #videoPlayer {
+    height: 100%;
+}
+
+/* Super Secret Button Styles */
+#superSecretButton {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
