@@ -1,143 +1,130 @@
+:root {
+    --accent-color: #2196F3;
+    --danger-color: #f44336;
+    --bg-color: rgba(30, 30, 30, 0.95);
+    --border-color: rgba(255, 255, 255, 0.1);
+}
+
 body {
     margin: 0;
     padding: 0;
     background: transparent;
     overflow: hidden;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-.window {
-    position: absolute;
-    top: 50px;
-    left: 50px;
-    width: 300px;
-    height: 200px;
-    background-color: rgba(40, 40, 40, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    color: #ffffff;
-    overflow: hidden;
-    resize: both;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.title-bar {
-    width: 100%;
-    height: 30px;
-    background-color: rgba(30, 30, 30, 0.9);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    cursor: move;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    user-select: none;
-}
-
-.text-area {
-    width: calc(100% - 20px);
-    height: calc(100% - 40px);
-    margin: 10px;
-    background-color: transparent;
-    border: none;
-    color: #ffffff;
-    font-size: 14px;
-    resize: none;
-    outline: none;
-}
-
-.video-player-container {
-    width: calc(100% - 20px);
-    height: calc(100% - 40px);
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.video-input-container {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-#videoPlayer {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-#videoPlayer iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    border-radius: 5px;
-}
-
+/* Improved Settings Button */
 .settings-button {
     position: fixed;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(30, 30, 30, 0.9);
-    color: #ffffff;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    top: 15px;
+    right: 15px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
     cursor: pointer;
-    font-size: 16px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
+    transition: 0.2s all ease;
+    backdrop-filter: blur(5px);
 }
 
+.settings-button:hover {
+    background: rgba(50, 50, 50, 0.95);
+    transform: rotate(90deg);
+}
+
+.settings-button svg {
+    color: #fff;
+}
+
+/* Enhanced Settings Panel */
 .settings-panel {
     position: fixed;
-    top: 50px;
-    right: 10px;
-    width: 200px;
-    background-color: rgba(30, 30, 30, 0.9);
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    top: 70px;
+    right: 15px;
+    width: 220px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    backdrop-filter: blur(10px);
     display: none;
-    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.timer-controls {
+.slider-container {
+    margin-bottom: 20px;
+}
+
+.slider-container label {
+    display: block;
+    color: #fff;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+}
+
+.settings-buttons {
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
 }
 
-#timerDisplay {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 24px;
-    font-weight: bold;
+.toggle-button {
+    background: rgba(50, 50, 50, 0.9);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s all ease;
+    text-align: left;
+    font-size: 0.9em;
 }
 
-.footer-text {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    font-size: 12px;
-    color: #888;
-    user-select: none;
+.toggle-button:hover {
+    background: rgba(70, 70, 70, 0.9);
+    transform: translateX(3px);
 }
 
-/* Watching Mode Styles */
-.no-borders .window {
+.toggle-button.danger {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+/* Video Player Window */
+#videoPlayerWindow.watching-mode {
     border: none !important;
     box-shadow: none !important;
-    resize: none;
+    background: transparent !important;
+}
+
+#videoPlayerWindow.watching-mode .title-bar,
+#videoPlayerWindow.watching-mode .video-input-container {
+    display: none;
+}
+
+#videoPlayerWindow.watching-mode #videoPlayer {
+    height: 100%;
 }
 
 /* Secret Floating Window */
@@ -146,11 +133,11 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 560px;
-    height: 315px;
-    z-index: 9999;
-    background: transparent !important;
+    width: 720px;
+    height: 405px;
     border: none !important;
+    background: transparent !important;
+    z-index: 9999;
     pointer-events: none;
 }
 
@@ -158,6 +145,10 @@ body {
     width: 100%;
     height: 100%;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     pointer-events: auto;
 }
+
+/* Rest of the styles remain similar but use the CSS variables */
+/* ... (other existing styles) ... */
