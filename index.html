@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Settings Button -->
     <button class="settings-button" id="settingsButton">⚙️</button>
 
+    <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
         <div class="slider-container">
             <label for="slider">Transparency:</label>
@@ -18,14 +20,16 @@
         <button class="toggle-button" id="toggleTimerButton">Show Timer</button>
         <button class="toggle-button" id="toggleVideoPlayerButton">Hide Video Player</button>
         <button class="toggle-button" id="watchingModeButton">Watching Mode</button>
-        <button class="toggle-button" id="superSecretButton" style="display: none; background-color: #ff4444">Super Secret Button</button>
+        <button class="toggle-button" id="superSecretButton" style="display: none;">Super Secret Button</button>
     </div>
 
+    <!-- Notes Window -->
     <div class="window" id="notesWindow" style="display: none;">
         <div class="title-bar" id="notesTitleBar">Notes</div>
         <textarea class="text-area" id="notesTextArea" placeholder="Type something..."></textarea>
     </div>
 
+    <!-- Video Player Window -->
     <div class="window" id="videoPlayerWindow">
         <div class="title-bar" id="videoPlayerTitleBar">Video Player</div>
         <div class="video-player-container">
@@ -37,6 +41,7 @@
         </div>
     </div>
 
+    <!-- Timer Window -->
     <div class="window" id="timerWindow" style="display: none;">
         <div class="title-bar" id="timerTitleBar">Stop Timer</div>
         <div style="padding: 10px;">
@@ -55,7 +60,8 @@
         </div>
     </div>
 
-    <div class="footer-text">Made by SirPro (totally not using chat-gpt :heh:)</div>
+    <!-- Footer -->
+    <div class="footer-text">Made by SirPro</div>
 
     <script src="script.js"></script>
 </body>
