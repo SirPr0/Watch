@@ -1,162 +1,192 @@
-const notesWindow = document.getElementById('notesWindow');
-const settingsButton = document.getElementById('settingsButton');
-const settingsPanel = document.getElementById('settingsPanel');
-const slider = document.getElementById('slider');
-const toggleNotesButton = document.getElementById('toggleNotesButton');
-const toggleTimerButton = document.getElementById('toggleTimerButton');
-const toggleVideoPlayerButton = document.getElementById('toggleVideoPlayerButton');
-const watchingModeButton = document.getElementById('watchingModeButton');
-const superSecretButton = document.getElementById('superSecretButton');
-const videoPlayerWindow = document.getElementById('videoPlayerWindow');
-const videoUrlInput = document.getElementById('videoUrl');
-const runVideoButton = document.getElementById('runVideoButton');
-const videoPlayer = document.getElementById('videoPlayer');
+const elements = {
+    settingsButton: document.getElementById('settingsButton'),
+    settingsPanel: document.getElementById('settingsPanel'),
+    slider: document.getElementById('slider'),
+    toggleNotesButton: document.getElementById('toggleNotesButton'),
+    toggleTimerButton: document.getElementById('toggleTimerButton'),
+    toggleVideoPlayerButton: document.getElementById('toggleVideoPlayerButton'),
+    watchingModeButton: document.getElementById('watchingModeButton'),
+    superSecretButton: document.getElementById('superSecretButton'),
+    videoPlayerWindow: document.getElementById('videoPlayerWindow'),
+    videoUrlInput: document.getElementById('videoUrl'),
+    runVideoButton: document.getElementById('runVideoButton'),
+    videoPlayer: document.getElementById('videoPlayer'),
+};
+
+let dragState = {
+    isDragging: false,
+    currentElement: null,
+    offsetX: 0,
+    offsetY: 0
+};
+
+let timerState = {
+    interval: null,
+    timeRemaining: 0,
+    isPaused: false
+};
+
+let secretState = {
+    clickCount: 0,
+    lastClickTime: 0
+};
 
 // Dragging functionality
-let isDragging = false;
-let currentDraggable = null;
-let offsetX, offsetY;
-
 document.querySelectorAll('.title-bar').forEach(bar => {
     bar.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        currentDraggable = bar.parentElement;
-        offsetX = e.clientX - currentDraggable.offsetLeft;
-        offsetY = e.clientY - currentDraggable.offsetTop;
+        dragState = {
+            isDragging: true,
+            currentElement: bar.parentElement,
+            offsetX: e.clientX - bar.parentElement.offsetLeft,
+            offsetY: e.clientY - bar.parentElement.offsetTop
+        };
     });
 });
 
 document.addEventListener('mousemove', (e) => {
-    if (isDragging && currentDraggable) {
-        currentDraggable.style.left = `${e.clientX - offsetX}px`;
-        currentDraggable.style.top = `${e.clientY - offsetY}px`;
+    if (dragState.isDragging && dragState.currentElement) {
+        dragState.currentElement.style.left = `${e.clientX - dragState.offsetX}px`;
+        dragState.currentElement.style.top = `${e.clientY - dragState.offsetY}px`;
     }
 });
 
 document.addEventListener('mouseup', () => {
-    isDragging = false;
-    currentDraggable = null;
+    dragState.isDragging = false;
+    dragState.currentElement = null;
 });
 
-// Settings panel
-settingsButton.addEventListener('click', () => {
-    settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+// Settings Panel
+elements.settingsButton.addEventListener('click', () => {
+    elements.settingsPanel.style.display = 
+        elements.settingsPanel.style.display === 'none' ? 'block' : 'none';
 });
 
-// Transparency control
-slider.addEventListener('input', (e) => {
+// Transparency Control
+elements.slider.addEventListener('input', (e) => {
     const opacity = e.target.value;
     document.querySelectorAll('.window').forEach(window => {
         window.style.opacity = opacity;
     });
 });
 
-// Window visibility toggles
-toggleNotesButton.addEventListener('click', () => toggleWindow('notesWindow', toggleNotesButton));
-toggleTimerButton.addEventListener('click', () => toggleWindow('timerWindow', toggleTimerButton));
-toggleVideoPlayerButton.addEventListener('click', () => toggleWindow('videoPlayerWindow', toggleVideoPlayerButton));
+// Window Toggles
+elements.toggleNotesButton.addEventListener('click', () => toggleWindow('notesWindow'));
+elements.toggleTimerButton.addEventListener('click', () => toggleWindow('timerWindow'));
+elements.toggleVideoPlayerButton.addEventListener('click', () => toggleWindow('videoPlayerWindow'));
 
-function toggleWindow(windowId, button) {
+function toggleWindow(windowId) {
     const window = document.getElementById(windowId);
     window.style.display = window.style.display === 'none' ? 'block' : 'none';
-    button.textContent = window.style.display === 'none' ? `Show ${button.id.replace('toggle', '')}` : `Hide ${button.id.replace('toggle', '')}`;
 }
 
-// Watching Mode functionality
-let watchingModeClicks = 0;
-let watchingModeTimeout = null;
+// Watching Mode
+elements.watchingModeButton.addEventListener('click', () => {
+    document.body.classList.toggle('no-borders');
+    
+    // Track double click within 60 minutes
+    const now = Date.now();
+    if (now - secretState.lastClickTime < 3600000) { // 1 hour
+        secretState.clickCount++;
+    } else {
+        secretState.clickCount = 1;
+    }
+    secretState.lastClickTime = now;
 
-watchingModeButton.addEventListener('click', () => {
-    videoPlayerWindow.classList.toggle('watching-mode');
-    watchingModeClicks++;
-    
-    if (watchingModeTimeout) clearTimeout(watchingModeTimeout);
-    watchingModeTimeout = setTimeout(() => watchingModeClicks = 0, 21600000); // 60 minutes
-    
-    if (watchingModeClicks >= 2) {
-        superSecretButton.style.display = 'block';
-        watchingModeClicks = 0;
+    if (secretState.clickCount >= 2) {
+        elements.superSecretButton.style.display = 'block';
+        secretState.clickCount = 0;
     }
 });
 
 // Super Secret Button
-superSecretButton.addEventListener('click', () => {
-    const overlay = document.createElement('div');
-    overlay.className = 'secret-overlay';
-    overlay.innerHTML = `
-        <iframe src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1" 
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+elements.superSecretButton.addEventListener('click', () => {
+    const secretWindow = document.createElement('div');
+    secretWindow.className = 'window secret-floating-window';
+    secretWindow.innerHTML = `
+        <iframe src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1&controls=0&modestbranding=1"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen>
         </iframe>`;
     
-    document.body.appendChild(overlay);
+    document.body.appendChild(secretWindow);
     
     setTimeout(() => {
-        overlay.remove();
-        window.close();
-    }, 9000);
+        secretWindow.remove();
+        elements.superSecretButton.style.display = 'none';
+    }, 12000);
 });
 
-// Video player functionality
-runVideoButton.addEventListener('click', () => {
-    const url = videoUrlInput.value.trim();
+// Video Player
+elements.runVideoButton.addEventListener('click', () => {
+    const url = elements.videoUrlInput.value.trim();
     let embedUrl = null;
 
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        const videoId = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
-        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    } else if (url.includes("twitch.tv")) {
-        const channel = url.match(/twitch.tv\/([a-zA-Z0-9_]+)/)?.[1];
-        if (channel) embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
-    } else if (url.includes("kick.com")) {
-        const channel = url.match(/kick.com\/([a-zA-Z0-9_]+)/)?.[1];
-        if (channel) embedUrl = `https://player.kick.com/${channel}`;
+    const platformHandlers = {
+        youtube: (url) => url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1],
+        twitch: (url) => url.match(/twitch.tv\/([a-zA-Z0-9_]+)/)?.[1],
+        kick: (url) => url.match(/kick.com\/([a-zA-Z0-9_]+)/)?.[1]
+    };
+
+    for (const [platform, handler] of Object.entries(platformHandlers)) {
+        if (url.includes(platform)) {
+            const id = handler(url);
+            if (id) {
+                embedUrl = platform === 'youtube' 
+                    ? `https://www.youtube.com/embed/${id}?autoplay=1`
+                    : platform === 'twitch'
+                    ? `https://player.twitch.tv/?channel=${id}&parent=${location.hostname}`
+                    : `https://player.kick.com/${id}`;
+                break;
+            }
+        }
     }
 
     if (embedUrl) {
-        videoPlayer.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+        elements.videoPlayer.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
     } else {
         alert("Invalid URL! Supported platforms: YouTube, Twitch, Kick");
     }
 });
 
-// Timer functionality
-let timerInterval;
-let timeRemaining = 0;
-
+// Timer System
 document.querySelectorAll('#add1Minute, #add5Minutes, #add10Minutes').forEach(button => {
     button.addEventListener('click', (e) => {
-        timeRemaining += parseInt(e.target.id.replace('add', '').replace('Minutes', '')) * 60;
+        const minutes = parseInt(e.target.id.replace(/\D/g, ''), 10);
+        timerState.timeRemaining += minutes * 60;
         updateTimerDisplay();
     });
 });
 
 document.getElementById('startTimerButton').addEventListener('click', startTimer);
-document.getElementById('pauseTimerButton').addEventListener('click', () => clearInterval(timerInterval));
+document.getElementById('pauseTimerButton').addEventListener('click', pauseTimer);
 document.getElementById('stopTimerButton').addEventListener('click', resetTimer);
 document.getElementById('resetTimerButton').addEventListener('click', resetTimer);
 
 function startTimer() {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        if (timeRemaining <= 0) {
-            clearInterval(timerInterval);
+    clearInterval(timerState.interval);
+    timerState.interval = setInterval(() => {
+        if (timerState.timeRemaining <= 0) {
+            clearInterval(timerState.interval);
             alert("Time's up!");
             return;
         }
-        timeRemaining--;
+        timerState.timeRemaining--;
         updateTimerDisplay();
     }, 1000);
 }
 
+function pauseTimer() {
+    clearInterval(timerState.interval);
+}
+
 function resetTimer() {
-    clearInterval(timerInterval);
-    timeRemaining = 0;
+    clearInterval(timerState.interval);
+    timerState.timeRemaining = 0;
     updateTimerDisplay();
 }
 
 function updateTimerDisplay() {
-    const minutes = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
-    const seconds = (timeRemaining % 60).toString().padStart(2, '0');
+    const minutes = Math.floor(timerState.timeRemaining / 60).toString().padStart(2, '0');
+    const seconds = (timerState.timeRemaining % 60).toString().padStart(2, '0');
     document.getElementById('timerDisplay').textContent = `${minutes}:${seconds}`;
 }
