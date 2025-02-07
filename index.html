@@ -29,9 +29,9 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.25);
             resize: both;
-            overflow: hidden;
-            min-width: 300px;
-            min-height: 200px;
+            overflow: auto;
+            min-width: 200px;
+            min-height: 150px;
             backdrop-filter: blur(8px);
         }
 
@@ -54,8 +54,10 @@
         }
 
         .video-window.watching-mode {
-            border: 2px solid transparent;
+            border: none;
             background: transparent;
+            box-shadow: none;
+            resize: none;
         }
 
         .video-window.watching-mode .title-bar,
@@ -72,11 +74,12 @@
         .video-container {
             padding: 10px;
             height: calc(100% - 40px);
+            display: flex;
+            flex-direction: column;
         }
 
         #videoPlayer {
-            width: 100%;
-            height: 100%;
+            flex: 1;
             border: none;
             border-radius: 4px;
         }
@@ -87,6 +90,7 @@
             left: 20px;
             width: 320px;
             height: 250px;
+            display: none;
         }
 
         .text-area {
@@ -107,6 +111,7 @@
             transform: translateX(-50%);
             width: 220px;
             height: 150px;
+            display: none;
         }
 
         .timer-interface {
@@ -165,10 +170,6 @@
             transform: rotate(180deg) scale(1.1);
         }
 
-        .settings-button svg {
-            transition: transform 0.3s ease;
-        }
-
         /* Transparency Controls */
         .transparency-controls {
             position: fixed;
@@ -183,11 +184,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .transparency-controls label {
-            font-size: 0.9em;
-            white-space: nowrap;
         }
 
         .slider {
@@ -254,8 +250,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 640px;
-            height: 360px;
+            width: 80vw;
+            height: 80vh;
             border: none;
             z-index: 9999;
             background: transparent;
@@ -377,8 +373,9 @@
                 });
 
                 transparencySlider.addEventListener('input', (e) => {
+                    const alpha = e.target.value;
                     document.querySelectorAll('.window').forEach(window => {
-                        window.style.opacity = e.target.value;
+                        window.style.backgroundColor = `rgba(30, 30, 30, ${alpha})`;
                     });
                 });
 
@@ -419,6 +416,7 @@
                     if (embedUrl) {
                         document.getElementById('videoPlayer').innerHTML = `
                             <iframe src="${embedUrl}" 
+                                    style="width:100%;height:100%" 
                                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
                                     allowfullscreen>
                             </iframe>`;
@@ -475,6 +473,7 @@
                     overlay.className = 'secret-overlay';
                     overlay.innerHTML = `
                         <iframe src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1" 
+                                style="width:100%;height:100%"
                                 allow="autoplay; encrypted-media" 
                                 allowfullscreen>
                         </iframe>`;
