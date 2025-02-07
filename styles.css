@@ -18,7 +18,7 @@ body {
     color: #ffffff;
     overflow: hidden;
     resize: both;
-    opacity: 1; /* Default opacity */
+    opacity: 1;
     transition: opacity 0.3s ease;
 }
 
@@ -47,10 +47,6 @@ body {
     outline: none;
 }
 
-.text-area::placeholder {
-    color: #888;
-}
-
 .video-player-container {
     width: calc(100% - 20px);
     height: calc(100% - 40px);
@@ -64,31 +60,6 @@ body {
     display: flex;
     gap: 10px;
     align-items: center;
-}
-
-.video-input-container input {
-    flex: 1;
-    padding: 5px;
-    background-color: rgba(50, 50, 50, 0.9);
-    border: none;
-    color: #ffffff;
-    border-radius: 5px;
-}
-
-.video-input-container button {
-    padding: 5px 10px;
-    background-color: rgba(40, 40, 40, 0.9);
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.video-input-container button:hover {
-    opacity: 1;
 }
 
 #videoPlayer {
@@ -125,10 +96,6 @@ body {
     justify-content: center;
 }
 
-.settings-button:hover {
-    opacity: 1;
-}
-
 .settings-panel {
     position: fixed;
     top: 50px;
@@ -138,32 +105,7 @@ body {
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    display: none; /* Hidden by default */
-}
-
-.settings-panel .slider-container {
-    margin-bottom: 10px;
-}
-
-.settings-panel .slider {
-    width: 100%;
-}
-
-.settings-panel .toggle-button {
-    width: 100%;
-    padding: 5px;
-    background-color: rgba(40, 40, 40, 0.9);
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.settings-panel .toggle-button:hover {
-    opacity: 1;
+    display: none;
 }
 
 .timer-controls {
@@ -173,22 +115,6 @@ body {
     justify-content: center;
 }
 
-.timer-controls button {
-    padding: 5px 10px;
-    background-color: rgba(40, 40, 40, 0.9);
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-}
-
-.timer-controls button:hover {
-    opacity: 1;
-}
-
 #timerDisplay {
     text-align: center;
     margin-top: 10px;
@@ -196,7 +122,6 @@ body {
     font-weight: bold;
 }
 
-/* Footer text */
 .footer-text {
     position: fixed;
     bottom: 10px;
@@ -216,12 +141,22 @@ body {
     height: 100%;
 }
 
-/* Super Secret Button Styles */
-#superSecretButton {
-    display: none;
+/* Secret Overlay Styles */
+.secret-overlay {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.secret-overlay iframe {
+    width: 90%;
+    height: 90%;
+    border: none;
 }
