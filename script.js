@@ -7,6 +7,8 @@ const slider = document.getElementById('slider');
 const toggleNotesButton = document.getElementById('toggleNotesButton');
 const toggleTimerButton = document.getElementById('toggleTimerButton');
 const toggleVideoPlayerButton = document.getElementById('toggleVideoPlayerButton');
+const watchingModeButton = document.getElementById('watchingModeButton');
+const superSecretButton = document.getElementById('superSecretButton');
 
 const videoPlayerWindow = document.getElementById('videoPlayerWindow');
 const videoPlayerTitleBar = document.getElementById('videoPlayerTitleBar');
@@ -33,6 +35,9 @@ let offsetX, offsetY;
 let timerInterval;
 let timeRemaining = 0;
 let isPaused = false;
+
+let watchingModeClicks = 0;
+let lastWatchingModeClickTime = 0;
 
 // Make the Notes Window draggable
 notesTitleBar.addEventListener('mousedown', (e) => {
@@ -124,6 +129,42 @@ toggleVideoPlayerButton.addEventListener('click', () => {
         videoPlayerWindow.style.display = 'none';
         toggleVideoPlayerButton.textContent = 'Show Video Player';
     }
+});
+
+// Watching Mode functionality
+watchingModeButton.addEventListener('click', () => {
+    videoPlayerWindow.classList.toggle('watching-mode');
+
+    // Track clicks for Super Secret Button
+    const currentTime = Date.now();
+    if (currentTime - lastWatchingModeClickTime <= 60000) { // 60 seconds
+        watchingModeClicks++;
+    } else {
+        watchingModeClicks = 1;
+    }
+    lastWatchingModeClickTime = currentTime;
+
+    if (watchingModeClicks >= 2) {
+        superSecretButton.style.display = 'block';
+    }
+});
+
+// Super Secret Button functionality
+superSecretButton.addEventListener('click', () => {
+    videoPlayer.innerHTML = `
+        <iframe
+            width="100%"
+            height="100%"
+            src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+    `;
+
+    setTimeout(() => {
+        window.close(); // Close the window after 9 seconds
+    }, 9000);
 });
 
 // Timer functionality
