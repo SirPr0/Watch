@@ -2,109 +2,72 @@ const elements = {
     settingsButton: document.getElementById('settingsButton'),
     settingsPanel: document.getElementById('settingsPanel'),
     slider: document.getElementById('slider'),
-    toggleNotesButton: document.getElementById('toggleNotesButton'),
-    toggleTimerButton: document.getElementById('toggleTimerButton'),
-    toggleVideoPlayerButton: document.getElementById('toggleVideoPlayerButton'),
-    watchingModeButton: document.getElementById('watchingModeButton'),
-    superSecretButton: document.getElementById('superSecretButton'),
+    toggleNotes: document.getElementById('toggleNotesButton'),
+    toggleTimer: document.getElementById('toggleTimerButton'),
+    toggleVideo: document.getElementById('toggleVideoPlayerButton'),
+    watchingMode: document.getElementById('watchingModeButton'),
+    superSecret: document.getElementById('superSecretButton'),
     videoPlayerWindow: document.getElementById('videoPlayerWindow'),
-    videoUrlInput: document.getElementById('videoUrl'),
-    runVideoButton: document.getElementById('runVideoButton'),
-    videoPlayer: document.getElementById('videoPlayer'),
+    videoUrl: document.getElementById('videoUrl'),
+    runVideo: document.getElementById('runVideoButton'),
+    videoPlayer: document.getElementById('videoPlayer')
 };
 
-let dragState = {
-    isDragging: false,
-    currentElement: null,
-    offsetX: 0,
-    offsetY: 0
+let state = {
+    dragging: null,
+    offset: { x: 0, y: 0 },
+    timer: { interval: null, time: 0 },
+    secret: { clicks: 0, lastClick: 0 }
 };
 
-let timerState = {
-    interval: null,
-    timeRemaining: 0,
-    isPaused: false
-};
-
-let secretState = {
-    clickCount: 0,
-    lastClickTime: 0
-};
-
-// Dragging functionality
-document.querySelectorAll('.title-bar').forEach(bar => {
-    bar.addEventListener('mousedown', (e) => {
-        dragState = {
-            isDragging: true,
-            currentElement: bar.parentElement,
-            offsetX: e.clientX - bar.parentElement.offsetLeft,
-            offsetY: e.clientY - bar.parentElement.offsetTop
-        };
-    });
-});
-
-document.addEventListener('mousemove', (e) => {
-    if (dragState.isDragging && dragState.currentElement) {
-        dragState.currentElement.style.left = `${e.clientX - dragState.offsetX}px`;
-        dragState.currentElement.style.top = `${e.clientY - dragState.offsetY}px`;
-    }
-});
-
-document.addEventListener('mouseup', () => {
-    dragState.isDragging = false;
-    dragState.currentElement = null;
-});
-
-// Settings Panel
+// Settings Panel Toggle
 elements.settingsButton.addEventListener('click', () => {
     elements.settingsPanel.style.display = 
-        elements.settingsPanel.style.display === 'none' ? 'block' : 'none';
+        elements.settingsPanel.style.display === 'block' ? 'none' : 'block';
 });
 
 // Transparency Control
 elements.slider.addEventListener('input', (e) => {
     const opacity = e.target.value;
-    document.querySelectorAll('.window').forEach(window => {
-        window.style.opacity = opacity;
-    });
+    document.querySelectorAll('.window').forEach(w => w.style.opacity = opacity);
 });
 
 // Window Toggles
-elements.toggleNotesButton.addEventListener('click', () => toggleWindow('notesWindow'));
-elements.toggleTimerButton.addEventListener('click', () => toggleWindow('timerWindow'));
-elements.toggleVideoPlayerButton.addEventListener('click', () => toggleWindow('videoPlayerWindow'));
+elements.toggleNotes.addEventListener('click', () => toggleWindow('notesWindow'));
+elements.toggleTimer.addEventListener('click', () => toggleWindow('timerWindow'));
+elements.toggleVideo.addEventListener('click', () => toggleWindow('videoPlayerWindow'));
 
-function toggleWindow(windowId) {
-    const window = document.getElementById(windowId);
+function toggleWindow(id) {
+    const window = document.getElementById(id);
     window.style.display = window.style.display === 'none' ? 'block' : 'none';
 }
 
-// Watching Mode
-elements.watchingModeButton.addEventListener('click', () => {
-    document.body.classList.toggle('no-borders');
+// Enhanced Watching Mode
+elements.watchingMode.addEventListener('click', () => {
+    elements.videoPlayerWindow.classList.toggle('watching-mode');
     
-    // Track double click within 60 minutes
+    // Secret button activation
     const now = Date.now();
-    if (now - secretState.lastClickTime < 3600000) { // 1 hour
-        secretState.clickCount++;
+    if (now - state.secret.lastClick < 3600000) { // 1 hour
+        state.secret.clicks++;
     } else {
-        secretState.clickCount = 1;
+        state.secret.clicks = 1;
     }
-    secretState.lastClickTime = now;
+    state.secret.lastClick = now;
 
-    if (secretState.clickCount >= 2) {
-        elements.superSecretButton.style.display = 'block';
-        secretState.clickCount = 0;
+    if (state.secret.clicks >= 2) {
+        elements.superSecret.style.display = 'block';
+        state.secret.clicks = 0;
     }
 });
 
 // Super Secret Button
-elements.superSecretButton.addEventListener('click', () => {
+elements.superSecret.addEventListener('click', () => {
     const secretWindow = document.createElement('div');
     secretWindow.className = 'window secret-floating-window';
     secretWindow.innerHTML = `
-        <iframe src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1&controls=0&modestbranding=1"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        <iframe src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1&controls=0" 
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen>
         </iframe>`;
     
@@ -112,81 +75,98 @@ elements.superSecretButton.addEventListener('click', () => {
     
     setTimeout(() => {
         secretWindow.remove();
-        elements.superSecretButton.style.display = 'none';
+        elements.superSecret.style.display = 'none';
     }, 12000);
 });
 
-// Video Player
-elements.runVideoButton.addEventListener('click', () => {
-    const url = elements.videoUrlInput.value.trim();
+// Dragging System
+document.querySelectorAll('.title-bar').forEach(bar => {
+    bar.addEventListener('mousedown', (e) => {
+        const window = bar.parentElement;
+        state.dragging = window;
+        state.offset = {
+            x: e.clientX - window.offsetLeft,
+            y: e.clientY - window.offsetTop
+        };
+    });
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (state.dragging) {
+        state.dragging.style.left = `${e.clientX - state.offset.x}px`;
+        state.dragging.style.top = `${e.clientY - state.offset.y}px`;
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    state.dragging = null;
+});
+
+// Video Player Functionality
+elements.runVideo.addEventListener('click', () => {
+    const url = elements.videoUrl.value.trim();
     let embedUrl = null;
 
-    const platformHandlers = {
-        youtube: (url) => url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1],
-        twitch: (url) => url.match(/twitch.tv\/([a-zA-Z0-9_]+)/)?.[1],
-        kick: (url) => url.match(/kick.com\/([a-zA-Z0-9_]+)/)?.[1]
-    };
+    const videoId = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
+    const twitchChannel = url.match(/twitch.tv\/(\w+)/)?.[1];
+    const kickChannel = url.match(/kick.com\/(\w+)/)?.[1];
 
-    for (const [platform, handler] of Object.entries(platformHandlers)) {
-        if (url.includes(platform)) {
-            const id = handler(url);
-            if (id) {
-                embedUrl = platform === 'youtube' 
-                    ? `https://www.youtube.com/embed/${id}?autoplay=1`
-                    : platform === 'twitch'
-                    ? `https://player.twitch.tv/?channel=${id}&parent=${location.hostname}`
-                    : `https://player.kick.com/${id}`;
-                break;
-            }
-        }
+    if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    } else if (twitchChannel) {
+        embedUrl = `https://player.twitch.tv/?channel=${twitchChannel}&parent=${location.hostname}`;
+    } else if (kickChannel) {
+        embedUrl = `https://player.kick.com/${kickChannel}`;
     }
 
     if (embedUrl) {
         elements.videoPlayer.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
     } else {
-        alert("Invalid URL! Supported platforms: YouTube, Twitch, Kick");
+        alert('Invalid URL! Supported: YouTube, Twitch, Kick');
     }
 });
 
 // Timer System
-document.querySelectorAll('#add1Minute, #add5Minutes, #add10Minutes').forEach(button => {
-    button.addEventListener('click', (e) => {
-        const minutes = parseInt(e.target.id.replace(/\D/g, ''), 10);
-        timerState.timeRemaining += minutes * 60;
+document.querySelectorAll('.timer-button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const action = e.target.id;
+        if (action.includes('Minute')) {
+            const minutes = parseInt(action.match(/\d+/), 10);
+            state.timer.time += minutes * 60;
+        } else {
+            if (action === 'startTimerButton') startTimer();
+            if (action === 'pauseTimerButton') pauseTimer();
+            if (action === 'resetTimerButton') resetTimer();
+        }
         updateTimerDisplay();
     });
 });
 
-document.getElementById('startTimerButton').addEventListener('click', startTimer);
-document.getElementById('pauseTimerButton').addEventListener('click', pauseTimer);
-document.getElementById('stopTimerButton').addEventListener('click', resetTimer);
-document.getElementById('resetTimerButton').addEventListener('click', resetTimer);
-
 function startTimer() {
-    clearInterval(timerState.interval);
-    timerState.interval = setInterval(() => {
-        if (timerState.timeRemaining <= 0) {
-            clearInterval(timerState.interval);
+    clearInterval(state.timer.interval);
+    state.timer.interval = setInterval(() => {
+        if (state.timer.time <= 0) {
+            clearInterval(state.timer.interval);
             alert("Time's up!");
             return;
         }
-        timerState.timeRemaining--;
+        state.timer.time--;
         updateTimerDisplay();
     }, 1000);
 }
 
 function pauseTimer() {
-    clearInterval(timerState.interval);
+    clearInterval(state.timer.interval);
 }
 
 function resetTimer() {
-    clearInterval(timerState.interval);
-    timerState.timeRemaining = 0;
+    clearInterval(state.timer.interval);
+    state.timer.time = 0;
     updateTimerDisplay();
 }
 
 function updateTimerDisplay() {
-    const minutes = Math.floor(timerState.timeRemaining / 60).toString().padStart(2, '0');
-    const seconds = (timerState.timeRemaining % 60).toString().padStart(2, '0');
+    const minutes = String(Math.floor(state.timer.time / 60)).padStart(2, '0');
+    const seconds = String(state.timer.time % 60).padStart(2, '0');
     document.getElementById('timerDisplay').textContent = `${minutes}:${seconds}`;
 }
