@@ -1,154 +1,162 @@
 :root {
-    --accent-color: #2196F3;
-    --danger-color: #f44336;
-    --bg-color: rgba(30, 30, 30, 0.95);
-    --border-color: rgba(255, 255, 255, 0.1);
+    --dark-bg: #1a1a1a;
+    --dark-border: #333333;
+    --accent: #2196f3;
+    --text: #ffffff;
 }
 
 body {
     margin: 0;
     padding: 0;
-    background: transparent;
+    background: #121212;
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
     overflow: hidden;
-    font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-/* Improved Settings Button */
+.window {
+    position: fixed;
+    background: var(--dark-bg);
+    border: 1px solid var(--dark-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    resize: both;
+    overflow: hidden;
+    min-width: 300px;
+    min-height: 200px;
+    opacity: 0.95;
+    transition: opacity 0.3s ease;
+}
+
+.title-bar {
+    padding: 10px;
+    background: #2a2a2a;
+    border-bottom: 1px solid var(--dark-border);
+    cursor: move;
+    user-select: none;
+    font-weight: 600;
+}
+
+/* Video Window */
+.video-window {
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 640px;
+    height: 360px;
+}
+
+.video-container {
+    padding: 10px;
+    height: calc(100% - 40px);
+}
+
+.video-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#videoPlayer {
+    width: 100%;
+    height: calc(100% - 40px);
+    border: none;
+    border-radius: 4px;
+}
+
+/* Notes Window */
+.notes-window {
+    bottom: 50px;
+    left: 50px;
+    width: 320px;
+    height: 250px;
+}
+
+.text-area {
+    width: 100%;
+    height: calc(100% - 40px);
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    resize: none;
+    font-size: 14px;
+}
+
+/* Timer Window */
+.timer-window {
+    top: 50px;
+    right: 50px;
+    width: 220px;
+    height: 150px;
+}
+
+.timer-interface {
+    padding: 15px;
+    text-align: center;
+}
+
+#timerDisplay {
+    font-size: 2.5em;
+    font-weight: 300;
+    margin-bottom: 15px;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.timer-btn {
+    padding: 6px 12px;
+    background: #333;
+    border: none;
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.timer-btn:hover {
+    background: #444;
+}
+
+/* Settings Panel */
 .settings-button {
     position: fixed;
-    top: 15px;
-    right: 15px;
-    background: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    top: 20px;
+    right: 20px;
+    background: var(--dark-bg);
+    border: 1px solid var(--dark-border);
+    border-radius: 50%;
     width: 40px;
     height: 40px;
     cursor: pointer;
-    display: grid;
-    place-items: center;
-    transition: 0.2s all ease;
-    backdrop-filter: blur(5px);
+    font-size: 20px;
+    color: var(--text);
 }
 
-.settings-button:hover {
-    background: rgba(50, 50, 50, 0.95);
-    transform: rotate(90deg);
-}
-
-.settings-button svg {
-    color: #fff;
-}
-
-/* Enhanced Settings Panel */
 .settings-panel {
     position: fixed;
     top: 70px;
-    right: 15px;
-    width: 220px;
-    background: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 15px;
-    backdrop-filter: blur(10px);
-    display: none;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.slider-container {
-    margin-bottom: 20px;
-}
-
-.slider-container label {
-    display: block;
-    color: #fff;
-    margin-bottom: 8px;
-    font-size: 0.9em;
-}
-
-.slider {
-    width: 100%;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(255, 255, 255, 0.1);
-    outline: none;
-    -webkit-appearance: none;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    cursor: pointer;
-}
-
-.settings-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.toggle-button {
-    background: rgba(50, 50, 50, 0.9);
-    border: 1px solid var(--border-color);
-    color: #fff;
-    padding: 10px;
+    right: 20px;
+    background: var(--dark-bg);
+    border: 1px solid var(--dark-border);
     border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s all ease;
-    text-align: left;
-    font-size: 0.9em;
-}
-
-.toggle-button:hover {
-    background: rgba(70, 70, 70, 0.9);
-    transform: translateX(3px);
-}
-
-.toggle-button.danger {
-    color: var(--danger-color);
-    border-color: var(--danger-color);
-}
-
-/* Video Player Window */
-#videoPlayerWindow.watching-mode {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-}
-
-#videoPlayerWindow.watching-mode .title-bar,
-#videoPlayerWindow.watching-mode .video-input-container {
+    padding: 15px;
+    width: 220px;
     display: none;
 }
 
-#videoPlayerWindow.watching-mode #videoPlayer {
-    height: 100%;
-}
-
-/* Secret Floating Window */
-.secret-floating-window {
+/* Secret Video Overlay */
+.secret-overlay {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 720px;
-    height: 405px;
-    border: none !important;
-    background: transparent !important;
-    z-index: 9999;
-    pointer-events: none;
-}
-
-.secret-floating-window iframe {
-    width: 100%;
-    height: 100%;
+    width: 560px;
+    height: 315px;
     border: none;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    pointer-events: auto;
+    z-index: 9999;
 }
-
-/* Rest of the styles remain similar but use the CSS variables */
-/* ... (other existing styles) ... */
