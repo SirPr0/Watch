@@ -1,520 +1,599 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Floating Media Suite</title>
-    <style>
-        :root {
-            --dark-bg: rgba(30, 30, 30, 0.9);
-            --dark-border: rgba(255, 255, 255, 0.1);
-            --accent: #2196f3;
-            --danger: #f44336;
-            --text: #ffffff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Player & Other</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden;
-        }
+    .window {
+      position: absolute;
+      background: rgba(30, 30, 30, 0.9);
+      border: 1px solid #444;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      resize: both;
+      min-width: 200px;
+      min-height: 150px;
+    }
 
-        .window {
-            position: fixed;
-            background: var(--dark-bg);
-            border: 1px solid var(--dark-border);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            resize: both;
-            overflow: hidden; /* Prevent scrollbars */
-            min-width: 200px;
-            min-height: 150px;
-            backdrop-filter: blur(8px);
-        }
+    .window-header {
+      padding: 8px;
+      background: rgba(20, 20, 20, 0.9);
+      border-bottom: 1px solid #444;
+      cursor: move;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .title-bar {
-            padding: 10px 15px;
-            background: rgba(40, 40, 40, 0.9);
-            border-bottom: 1px solid var(--dark-border);
-            cursor: move;
-            user-select: none;
-            font-weight: 600;
-        }
+    .window-content {
+      padding: 10px;
+      height: calc(100% - 40px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-        /* Video Window */
-        .video-window {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 640px;
-            height: 360px;
-        }
+    .notes-window {
+      width: 300px;
+      height: 250px;
+      top: 20px;
+      left: 20px;
+      display: none;
+    }
 
-        .video-window.watching-mode {
-            border: none;
-            background: transparent;
-            box-shadow: none;
-            resize: none;
-        }
+    .timer-window {
+      width: 250px;
+      height: 200px;
+      top: 20px;
+      left: 340px;
+      display: none;
+    }
 
-        .video-window.watching-mode .title-bar,
-        .video-window.watching-mode .video-controls {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    .video-window {
+      width: 400px;
+      height: 300px;
+      top: 20px;
+      left: 610px;
+    }
 
-        .video-window.watching-mode:hover .title-bar,
-        .video-window.watching-mode:hover .video-controls {
-            opacity: 1;
-        }
+    textarea {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: #fff;
+      resize: none;
+      outline: none;
+    }
 
-        .video-container {
-            padding: 10px;
-            height: calc(100% - 40px);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Prevent scrollbars */
-        }
+    .timer-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+      width: 100%;
+    }
 
-        #videoPlayer {
-            flex: 1;
-            border: none;
-            border-radius: 4px;
-            overflow: hidden; /* Prevent scrollbars */
-        }
+    .timer-controls .top-buttons {
+      display: flex;
+      gap: 5px;
+    }
 
-        /* Notes Window */
-        .notes-window {
-            bottom: 20px;
-            left: 20px;
-            width: 320px;
-            height: 250px;
-            display: none;
-        }
+    .timer-controls .bottom-buttons {
+      display: flex;
+      gap: 5px;
+    }
 
-        .text-area {
-            width: 100%;
-            height: calc(100% - 40px);
-            padding: 15px;
-            background: transparent;
-            border: none;
-            color: var(--text);
-            resize: none;
-            font-size: 14px;
-        }
+    .timer-controls button {
+      background: #444;
+      border: none;
+      color: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      flex: 1 1 auto;
+    }
 
-        /* Timer Window */
-        .timer-window {
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 220px;
-            height: 150px;
-            display: none;
-        }
+    .timer-controls button:hover {
+      background: #555;
+    }
 
-        .timer-interface {
-            padding: 15px;
-            text-align: center;
-        }
+    .timer-display {
+      font-size: 24px;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+    }
 
-        #timerDisplay {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            font-weight: 300;
-        }
+    .timer-display.rainbow {
+      animation: rainbow-wave 1s linear infinite;
+    }
 
-        .timer-controls {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
+    @keyframes rainbow-wave {
+      0% { color: red; }
+      14% { color: orange; }
+      28% { color: yellow; }
+      42% { color: green; }
+      57% { color: blue; }
+      71% { color: indigo; }
+      85% { color: violet; }
+      100% { color: red; }
+    }
 
-        .timer-btn {
-            padding: 6px 12px;
-            background: rgba(50, 50, 50, 0.9);
-            border: 1px solid var(--dark-border);
-            border-radius: 4px;
-            color: var(--text);
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
+    iframe {
+      width: 100%;
+      height: calc(100% - 40px);
+      border: none;
+      background: transparent;
+    }
 
-        .timer-btn:hover {
-            background: rgba(70, 70, 70, 0.9);
-        }
+    .global-controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
 
-        /* Settings Button */
-        .settings-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(40, 40, 40, 0.9);
-            border: 1px solid var(--dark-border);
-            border-radius: 50%;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .global-controls button {
+      background: #444;
+      border: none;
+      color: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-        .settings-button:hover {
-            background: rgba(60, 60, 60, 0.9);
-            transform: rotate(180deg) scale(1.1);
-        }
+    .global-controls button:hover {
+      background: #555;
+    }
 
-        /* Settings Panel */
-        .settings-panel {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            background: var(--dark-bg);
-            border: 1px solid var(--dark-border);
-            border-radius: 8px;
-            padding: 15px;
-            width: 220px;
-            display: none;
-            backdrop-filter: blur(8px);
-        }
+    #start-timer {
+      background: green;
+      opacity: 1;
+    }
 
-        .settings-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+    #stop-timer {
+      background: red;
+      opacity: 1;
+    }
 
-        .slider-container {
-            margin-bottom: 15px;
-        }
+    .settings-panel {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 10px;
+      background: rgba(30, 30, 30, 0.9);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
 
-        .slider-container label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-        }
+    .settings-panel label {
+      display: block;
+      margin-bottom: 5px;
+    }
 
-        .slider {
-            width: 100%;
-            height: 4px;
-            border-radius: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-appearance: none;
-        }
+    .settings-panel input[type="range"] {
+      width: 100%;
+    }
 
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-        }
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
 
-        .toggle-button {
-            padding: 10px;
-            background: rgba(50, 50, 50, 0.9);
-            border: 1px solid var(--dark-border);
-            border-radius: 6px;
-            color: var(--text);
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
-        }
+    .video-controls {
+      display: flex;
+      gap: 5px;
+      width: 100%;
+      align-items: center;
+    }
 
-        .toggle-button:hover {
-            background: rgba(70, 70, 70, 0.9);
-            transform: translateX(4px);
-        }
+    .video-controls input {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
 
-        .toggle-button.danger {
-            color: var(--danger);
-            border-color: var(--danger);
-        }
+    .video-controls button {
+      background: #444;
+      border: none;
+      color: #fff;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-        /* Secret Video Overlay */
-        .secret-overlay {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80vw;
-            height: 80vh;
-            border: none;
-            z-index: 9999;
-            background: transparent;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
+    .video-controls button:hover {
+      background: #555;
+    }
 
-        .secret-overlay iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+    /* New CSS for Watching Mode */
+    .watching-mode .window-header,
+    .watching-mode .video-controls {
+      display: none;
+    }
+
+    .watching-mode .window-content {
+      padding: 0;
+      height: 100%;
+    }
+
+    .watching-mode iframe {
+      height: 100%;
+    }
+
+    /* Super Secret Window Styles */
+    .secret-window {
+      width: 800px; /* 200% larger */
+      height: 600px; /* 200% larger */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* Center the window */
+      position: fixed;
+      z-index: 1000;
+    }
+
+    .secret-window iframe {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-    <!-- Settings Button -->
-    <button class="settings-button" id="settingsButton">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-            <path fill="currentColor" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
-        </svg>
-    </button>
-
-    <!-- Settings Panel -->
-    <div class="settings-panel" id="settingsPanel">
-        <div class="slider-container">
-            <label>Window Transparency</label>
-            <input type="range" min="0" max="1" value="1" step="0.01" class="slider" id="transparencySlider">
-        </div>
-        <div class="settings-buttons">
-            <button class="toggle-button" id="toggleNotes">Toggle Notes</button>
-            <button class="toggle-button" id="toggleTimer">Toggle Timer</button>
-            <button class="toggle-button" id="toggleVideo">Toggle Video</button>
-            <button class="toggle-button" id="watchingMode">Watching Mode</button>
-            <button class="toggle-button danger" id="superSecretButton" style="display: none;">Super Secret</button>
-        </div>
+  <!-- Notes Window -->
+  <div class="window notes-window">
+    <div class="window-header">
+      <span>Notes</span>
     </div>
+    <div class="window-content">
+      <textarea placeholder="Type your notes here..."></textarea>
+    </div>
+  </div>
 
-    <!-- Floating Windows -->
-    <div class="window video-window">
-        <div class="title-bar">Video Player</div>
-        <div class="video-container">
-            <div class="video-controls">
-                <input type="text" id="videoUrl" placeholder="Enter video URL">
-                <button id="runVideo">▶️</button>
-            </div>
-            <div id="videoPlayer"></div>
+  <!-- Timer Window -->
+  <div class="window timer-window">
+    <div class="window-header">
+      <span>Stop Timer</span>
+    </div>
+    <div class="window-content">
+      <div class="timer-controls">
+        <div class="top-buttons">
+          <button id="add-1">+1</button>
+          <button id="add-5">+5</button>
+          <button id="add-10">+10</button>
         </div>
-    </div>
-
-    <div class="window notes-window">
-        <div class="title-bar">Notes</div>
-        <textarea class="text-area" placeholder="Start typing..."></textarea>
-    </div>
-
-    <div class="window timer-window">
-        <div class="title-bar">Timer</div>
-        <div class="timer-interface">
-            <div id="timerDisplay">00:00</div>
-            <div class="timer-controls">
-                <button class="timer-btn" id="add1Min">+1</button>
-                <button class="timer-btn" id="add5Min">+5</button>
-                <button class="timer-btn" id="add10Min">+10</button>
-                <button class="timer-btn" id="startTimer">Start</button>
-                <button class="timer-btn" id="resetTimer">Reset</button>
-            </div>
+        <div class="timer-display" id="timer-display">00:00:00</div>
+        <div class="bottom-buttons">
+          <button id="start-timer">Start</button>
+          <button id="pause-timer">Pause</button>
+          <button id="stop-timer">Stop</button>
+          <button id="reset-timer">Reset</button>
         </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        class MediaSuite {
-            constructor() {
-                this.draggingElement = null;
-                this.dragOffset = { x: 0, y: 0 };
-                this.timerState = { interval: null, time: 0 };
-                this.secretClicks = [];
-                
-                this.initializeDraggableWindows();
-                this.initializeSettingsPanel();
-                this.initializeVideoPlayer();
-                this.initializeTimer();
-                this.initializeSecretButton();
-            }
+  <!-- Video Window -->
+  <div class="window video-window">
+    <div class="window-header">
+      <span>Video Player</span>
+    </div>
+    <div class="window-content">
+      <div class="video-controls">
+        <input type="text" id="video-url" placeholder="Enter YouTube, Twitch, or Kick URL">
+        <button id="load-video">▶️</button>
+      </div>
+      <iframe id="video-frame" src="" allowfullscreen></iframe>
+    </div>
+  </div>
 
-            initializeDraggableWindows() {
-                document.querySelectorAll('.title-bar').forEach(bar => {
-                    bar.addEventListener('mousedown', (e) => {
-                        this.draggingElement = bar.parentElement;
-                        const rect = this.draggingElement.getBoundingClientRect();
-                        this.dragOffset = {
-                            x: e.clientX - rect.left,
-                            y: e.clientY - rect.top
-                        };
-                    });
-                });
+  <!-- Global Controls -->
+  <div class="global-controls">
+    <button id="settings-button">⚙️</button>
+    <div class="settings-panel" id="global-settings">
+      <label for="global-opacity">Transparency:</label>
+      <input type="range" id="global-opacity" min="0" max="1" step="0.1" value="0.9" oninput="setGlobalOpacity(this.value)">
+      <button onclick="toggleWindow('notes-window')">Toggle Notes</button>
+      <button onclick="toggleWindow('timer-window')">Toggle Timer</button>
+      <button onclick="toggleWindow('video-window')">Toggle Video</button>
+      <button id="watch-toggle" onclick="toggleWatchingMode()">Watching Mode</button>
+      <button id="super-secret-button" style="display: none;" onclick="openSecretWindow()">Super Secret Button</button>
+    </div>
+  </div>
 
-                document.addEventListener('mousemove', (e) => {
-                    if (this.draggingElement) {
-                        this.draggingElement.style.left = `${e.clientX - this.dragOffset.x}px`;
-                        this.draggingElement.style.top = `${e.clientY - this.dragOffset.y}px`;
-                    }
-                });
+  <script>
+    // Make windows draggable
+    const windows = document.querySelectorAll('.window');
+    windows.forEach(window => {
+      const header = window.querySelector('.window-header');
+      header.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const offsetX = e.clientX - window.offsetLeft;
+        const offsetY = e.clientY - window.offsetTop;
 
-                document.addEventListener('mouseup', () => {
-                    this.draggingElement = null;
-                });
-            }
+        const onMouseMove = (e) => {
+          window.style.left = `${e.clientX - offsetX}px`;
+          window.style.top = `${e.clientY - offsetY}px`;
+        };
 
-            initializeSettingsPanel() {
-                const settingsButton = document.getElementById('settingsButton');
-                const settingsPanel = document.getElementById('settingsPanel');
-                const transparencySlider = document.getElementById('transparencySlider');
+        const onMouseUp = () => {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        };
 
-                settingsButton.addEventListener('click', () => {
-                    settingsPanel.style.display = 
-                        settingsPanel.style.display === 'block' ? 'none' : 'block';
-                });
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+    });
 
-                transparencySlider.addEventListener('input', (e) => {
-                    const alpha = e.target.value;
-                    document.querySelectorAll('.window').forEach(window => {
-                        window.style.backgroundColor = `rgba(30, 30, 30, ${alpha})`;
-                    });
-                });
+    // Timer functionality
+    let timerInterval;
+    let time = 0;
+    const timerDisplay = document.getElementById('timer-display');
 
-                document.getElementById('toggleNotes').addEventListener('click', () => {
-                    this.toggleWindowVisibility('.notes-window');
-                });
+    function updateTimer() {
+      const hours = Math.floor(time / 3600).toString().padStart(2, '0');
+      const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+      const seconds = (time % 60).toString().padStart(2, '0');
+      timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+    }
 
-                document.getElementById('toggleTimer').addEventListener('click', () => {
-                    this.toggleWindowVisibility('.timer-window');
-                });
+    function timerEnd() {
+      let flashCount = 0;
+      const flashInterval = setInterval(() => {
+        timerDisplay.style.visibility = timerDisplay.style.visibility === 'hidden' ? 'visible' : 'hidden';
+        flashCount++;
+        if (flashCount >= 6) {
+          clearInterval(flashInterval);
+          timerDisplay.style.visibility = 'visible';
+        }
+      }, 200);
 
-                document.getElementById('toggleVideo').addEventListener('click', () => {
-                    this.toggleWindowVisibility('.video-window');
-                });
-            }
+      timerDisplay.classList.add('rainbow');
+      setTimeout(() => {
+        timerDisplay.classList.remove('rainbow');
+      }, 5000);
 
-            initializeVideoPlayer() {
-                const runButton = document.getElementById('runVideo');
-                const urlInput = document.getElementById('videoUrl');
+      const sound = new Audio('https://cdn.pixabay.com/download/audio/2021/08/09/audio_3ddd1e5402.mp3?filename=bomb-countdown-beeps-6868.mp3');
+      sound.volume = 0.3;
+      sound.play();
+    }
 
-                runButton.addEventListener('click', () => {
-                    const url = urlInput.value.trim();
-                    let embedUrl = '';
+    document.getElementById('start-timer').addEventListener('click', () => {
+      if (!timerInterval) {
+        timerInterval = setInterval(() => {
+          time--;
+          if (time <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            time = 0;
+            timerEnd();
+          }
+          updateTimer();
+        }, 1000);
+      }
+    });
 
-                    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                        const videoId = url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})/)?.[1];
-                        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-                    } 
-                    else if (url.includes('twitch.tv')) {
-                        const channel = url.split('/').pop();
-                        embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
-                    } 
-                    else if (url.includes('kick.com')) {
-                        const channel = url.split('/').pop();
-                        embedUrl = `https://player.kick.com/${channel}`;
-                    }
+    document.getElementById('pause-timer').addEventListener('click', () => {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    });
 
-                    if (embedUrl) {
-                        document.getElementById('videoPlayer').innerHTML = `
-                            <iframe src="${embedUrl}" 
-                                    style="width:100%;height:100%" 
-                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
-                            </iframe>`;
-                    }
-                });
-            }
+    document.getElementById('stop-timer').addEventListener('click', () => {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      time = 0;
+      updateTimer();
+    });
 
-            initializeTimer() {
-                const timerControls = {
-                    add1Min: 60,
-                    add5Min: 300,
-                    add10Min: 600,
-                    startTimer: 'start',
-                    resetTimer: 'reset'
-                };
+    document.getElementById('reset-timer').addEventListener('click', () => {
+      time = 0;
+      updateTimer();
+    });
 
-                Object.entries(timerControls).forEach(([id, value]) => {
-                    document.getElementById(id).addEventListener('click', () => {
-                        if (typeof value === 'number') {
-                            this.timerState.time += value;
-                        } else {
-                            if (value === 'start') this.startTimer();
-                            if (value === 'reset') this.resetTimer();
-                        }
-                        this.updateTimerDisplay();
-                    });
-                });
-            }
+    document.getElementById('add-1').addEventListener('click', () => {
+      time += 60;
+      updateTimer();
+    });
 
-            initializeSecretButton() {
-                const watchingModeButton = document.getElementById('watchingMode');
-                const secretButton = document.getElementById('superSecretButton');
+    document.getElementById('add-5').addEventListener('click', () => {
+      time += 300;
+      updateTimer();
+    });
 
-                watchingModeButton.addEventListener('click', () => {
-                    document.querySelector('.video-window').classList.toggle('watching-mode');
-                    
-                    const now = Date.now();
-                    this.secretClicks = this.secretClicks.filter(clickTime => 
-                        now - clickTime < 3600000
-                    );
-                    this.secretClicks.push(now);
+    document.getElementById('add-10').addEventListener('click', () => {
+      time += 600;
+      updateTimer();
+    });
 
-                    if (this.secretClicks.length >= 2) {
-                        secretButton.style.display = 'block';
-                        this.secretClicks = [];
-                        setTimeout(() => {
-                            secretButton.style.display = 'none';
-                        }, 60000);
-                    }
-                });
+    // Video player functionality
+    document.getElementById('load-video').addEventListener('click', () => {
+      const url = document.getElementById('video-url').value.trim();
+      const videoFrame = document.getElementById('video-frame');
 
-                secretButton.addEventListener('click', () => {
-                    const overlay = document.createElement('div');
-                    overlay.className = 'secret-overlay';
-                    overlay.innerHTML = `
-                        <iframe src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1" 
-                                style="width:100%;height:100%"
-                                allow="autoplay; encrypted-media" 
-                                allowfullscreen>
-                        </iframe>`;
-                    
-                    document.body.appendChild(overlay);
-                    
-                    setTimeout(() => {
-                        overlay.remove();
-                        secretButton.style.display = 'none';
-                    }, 10000);
-                });
-            }
+      if (url) {
+        // Check for YouTube URLs
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+          const videoId = extractYouTubeVideoId(url);
+          if (videoId) {
+            videoFrame.src = `https://www.youtube.com/embed/${videoId}`;
+          } else {
+            alert('Invalid YouTube URL. Please enter a valid YouTube link.');
+          }
+        }
+        // Check for Twitch URLs
+        else if (url.includes('twitch.tv')) {
+          const embedUrl = getTwitchEmbedUrl(url);
+          if (embedUrl) {
+            videoFrame.src = embedUrl;
+          } else {
+            alert('Invalid Twitch URL. Please enter a valid Twitch channel, video, or clip URL.');
+          }
+        }
+        // Check for Kick URLs
+        else if (url.includes('kick.com')) {
+          const embedUrl = getKickEmbedUrl(url);
+          if (embedUrl) {
+            videoFrame.src = embedUrl;
+          } else {
+            alert('Invalid Kick URL. Please enter a valid Kick channel URL.');
+          }
+        }
+        // Handle other URLs
+        else {
+          videoFrame.src = url;
+        }
+      }
+    });
 
-            toggleWindowVisibility(selector) {
-                const window = document.querySelector(selector);
-                window.style.display = window.style.display === 'none' ? 'block' : 'none';
-            }
+    // Function to extract YouTube video ID from URL
+    function extractYouTubeVideoId(url) {
+      const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    }
 
-            startTimer() {
-                clearInterval(this.timerState.interval);
-                this.timerState.interval = setInterval(() => {
-                    if (this.timerState.time <= 0) {
-                        clearInterval(this.timerState.interval);
-                        alert("Timer Complete!");
-                        return;
-                    }
-                    this.timerState.time--;
-                    this.updateTimerDisplay();
-                }, 1000);
-            }
+    // Function to handle Twitch URLs
+    function getTwitchEmbedUrl(url) {
+      try {
+        const parsedUrl = new URL(url);
+        const pathSegments = parsedUrl.pathname.split('/').filter(p => p);
+        let type, id;
 
-            resetTimer() {
-                clearInterval(this.timerState.interval);
-                this.timerState.time = 0;
-                this.updateTimerDisplay();
-            }
-
-            updateTimerDisplay() {
-                const minutes = Math.floor(this.timerState.time / 60)
-                    .toString().padStart(2, '0');
-                const seconds = (this.timerState.time % 60)
-                    .toString().padStart(2, '0');
-                document.getElementById('timerDisplay').textContent = `${minutes}:${seconds}`;
-            }
+        if (pathSegments.length >= 3 && pathSegments[1] === 'v') {
+          type = 'video';
+          id = pathSegments[2];
+        } else if (pathSegments.length >= 3 && pathSegments[1] === 'clip') {
+          type = 'clip';
+          id = pathSegments[2];
+        } else if (pathSegments.length >= 1) {
+          type = 'channel';
+          id = pathSegments[0];
+        } else {
+          return null;
         }
 
-        new MediaSuite();
-    </script>
+        // Use the current hostname for the parent parameter
+        const parentHost = window.location.hostname || 'localhost';
+        return `https://player.twitch.tv/?${type}=${encodeURIComponent(id)}&parent=${parentHost}`;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Function to handle Kick URLs
+    function getKickEmbedUrl(url) {
+      try {
+        const parsedUrl = new URL(url);
+        const pathSegments = parsedUrl.pathname.split('/').filter(p => p);
+
+        if (pathSegments.length >= 1) {
+          const channelName = pathSegments[0];
+          return `https://player.kick.com/${channelName}`;
+        } else {
+          return null;
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Global settings functionality
+    const settingsButton = document.getElementById('settings-button');
+    const settingsPanel = document.getElementById('global-settings');
+
+    settingsButton.addEventListener('click', () => {
+      settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+    });
+
+    function setGlobalOpacity(opacity) {
+      windows.forEach(window => {
+        window.style.opacity = opacity;
+      });
+    }
+
+    function toggleWindow(windowId) {
+      const window = document.querySelector(`.${windowId}`);
+      if (window.style.display === 'none' || window.style.display === '') {
+        window.style.display = 'block'; // Show the window
+      } else {
+        window.style.display = 'none'; // Hide the window
+      }
+    }
+
+    // Watching Mode functionality
+    let isWatchingMode = false;
+    let watchModeClicks = 0;
+    let watchModeTimer = null;
+    const superSecretButton = document.getElementById('super-secret-button');
+
+    function toggleWatchingMode() {
+      const videoWindow = document.querySelector('.video-window');
+      const watchToggleButton = document.getElementById('watch-toggle');
+
+      isWatchingMode = !isWatchingMode;
+
+      if (isWatchingMode) {
+        videoWindow.classList.add('watching-mode');
+        watchToggleButton.textContent = 'Change Video';
+      } else {
+        videoWindow.classList.remove('watching-mode');
+        watchToggleButton.textContent = 'Watching Mode';
+      }
+
+      // Track clicks for Super Secret Button
+      watchModeClicks++;
+      if (watchModeClicks === 2) {
+        superSecretButton.style.display = 'block'; // Show the Super Secret Button
+        watchModeClicks = 0; // Reset click counter
+        if (watchModeTimer) clearTimeout(watchModeTimer); // Reset the timer
+        watchModeTimer = setTimeout(() => {
+          superSecretButton.style.display = 'none'; // Hide the button after 500 seconds
+        }, 500000); // 500 seconds
+      }
+    }
+
+    // Super Secret Button functionality
+    function openSecretWindow() {
+      const secretWindow = document.createElement('div');
+      secretWindow.className = 'window secret-window';
+      secretWindow.innerHTML = `
+        <div class="window-header">
+          <span>:plp:</span>
+        </div>
+        <div class="window-content">
+          <iframe src="https://www.youtube.com/embed/xvFZjo5PgG0?autoplay=1" allowfullscreen></iframe>
+        </div>
+      `;
+
+      document.body.appendChild(secretWindow);
+
+      // Remove the secret window after 9 seconds
+      setTimeout(() => {
+        secretWindow.remove();
+      }, 9000); // 9 seconds
+    }
+  </script>
 </body>
 </html>
